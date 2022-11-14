@@ -1,0 +1,6 @@
+{
+  "development": {
+    "url": "postgres://pgwziuqf:Fwob4t7b6sP29eq3iaaFaFehIrzSkfU5@lucky.db.elephantsql.com/pgwziuqf",
+    "dialect": "postgres"
+  }
+}
