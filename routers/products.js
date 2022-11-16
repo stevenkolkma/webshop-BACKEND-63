@@ -2,6 +2,7 @@ const express = require("express");
 const { Router } = express;
 const Product = require("../models").Product;
 const Categories = require("../models").Category;
+const { Op } = require("sequelize");
 
 const router = new Router();
 
@@ -19,14 +20,19 @@ router.post("/", async (req, res, next) => {
     const { category, rating, price } = req.body;
     const filter = {}
     if(category){
-      filter.categoryId = category
+      filter.categoryId = {
+        [Op.in]: category
+      }
     }
     if(rating){
-     filter.rating = rating
+     filter.rating = {
+      [Op.in]:rating
+     }
     }
     if(price){
      filter.price = price
     }
+
     const products = await Product.findAll({
       where: filter,
     });
