@@ -19,12 +19,12 @@ router.post("/", async (req, res, next) => {
   try {
     const { category, rating, price } = req.body;
     const filter = {}
-    if(category){
+    if(category && category.length > 0){
       filter.categoryId = {
         [Op.in]: category
       }
     }
-    if(rating){
+    if(rating && rating.length > 0){
      filter.rating = {
       [Op.in]:rating
      }
