@@ -2,6 +2,7 @@ const express = require("express");
 const { Router } = express;
 const Product = require("../models").Product;
 const Categories = require("../models").Category;
+const { Op } = require("sequelize");
 
 const router = new Router();
 
@@ -17,24 +18,28 @@ router.get("/", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
     const { category, rating, price } = req.body;
-
-    // if (!category) {
-    //   const categori1 = await Categories.findAll();
-
-    //   return categori1;
-    // } else {
-    //   const categori1 = category;
-
-    // }
+    const filter = {}
+    if(category && category.length > 0){
+      filter.categoryId = {
+        [Op.in]: category
+      }
+    }
+    if(rating && rating.length > 0){
+     filter.rating = {
+      [Op.in]:rating
+     }
+    }
+    if(price){
+     filter.price = price
+    }
 
     const products = await Product.findAll({
-      where: { categoryId: category, rating: rating, price: price },
+      where: filter,
     });
 
     res.json(products);
-    // console.log('products');
   } catch (e) {
-    console.log(e.message);
+    console.log(e);
   }
 });
 
