@@ -22,9 +22,9 @@ router.post("/login", async (req, res, next) => {
     const userToLogin = await User.findOne({ where: { email } });
 
     if (!userToLogin || !bcrypt.compareSync(password, userToLogin.password)) {
-      res
-        .status(400)
-        .send("User with that email not found or password incorrect");
+      res.status(400).send({
+        message: "User with that email not found or password incorrect",
+      });
       return;
     }
 
@@ -44,7 +44,16 @@ router.post("/login", async (req, res, next) => {
 router.post("/signup", async (req, res) => {
   const { firstName, lastName, address, email, password } = req.body;
   if (!firstName || !lastName || !address || !email || !password) {
-    return res.status(400).send("Please provide an email, password and a name");
+    return res
+      .status(400)
+      .send({ message: "Please provide an email, password and a name" });
+  }
+
+  const userExists = await User.findOne({ where: { email } });
+  if (userExists) {
+    return res.status(400).send({
+      message: "This email is already in use, please use a different one",
+    });
   }
 
   try {
