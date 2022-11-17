@@ -9,7 +9,7 @@ const router = new Router();
 const authMiddleware = require("../auth/middleware");
 
 //login
-router.post("/login", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
