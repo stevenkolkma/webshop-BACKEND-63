@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const secret = process.env.JWT_SECRET || "o02er4fe2qhji8hdfhau#d";
+const { jwtSecret } = require("../config/secrets");
 
 function toJWT(data) {
   return jwt.sign(data, secret, { expiresIn: "2h" });
