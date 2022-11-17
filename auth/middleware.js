@@ -1,23 +1,48 @@
-const Author = require("../models").author;
+const User = require("../models").author;
 const { toData } = require("./jwt");
 
 async function auth(req, res, next) {
   const auth =
     req.headers.authorization && req.headers.authorization.split(" ");
+
+  if (!auth || !(auth[0] === "Bearer" || !auth[1])) {
+    return res.status(401).send({
+      message:
+        "This endpoints requires an Authorization header with a valid token",
+    });
+  }
+
   if (auth && auth[0] === "Bearer" && auth[1]) {
     try {
       const data = toData(auth[1]);
-      const author = await User.findByPk(data.userId);
-      if (!author) {
-        res.status(404).send("No author found");
-      } else {
-        req.author = author;
-        next();
+      const user = await User.findByPk(data.userId);
+      if (!user) {
+        return res.status(404).send({ message: "User does not exist" });
       }
+
+      // add user object to request
+      req.user = user;
+      // next handler
+      return next();
     } catch (error) {
-      res.status(400).send({
-        message: `Error ${error.name}: ${error.message}`,
-      });
+      console.log("ERROR IN AUTH MIDDLEWARE", error);
+
+      switch (error.name) {
+        case "TokenExpiredError":
+          return res
+            .status(401)
+            .send({ error: error.name, message: error.message });
+
+        case "JsonWebTokenError":
+          return res
+            .status(400)
+            .send({ error: error.name, message: error.message });
+
+        default:
+          return res.status(400).send({
+            message: "Something went wrong, sorry",
+          });
+      }
     }
   } else {
     res.status(401).send({
